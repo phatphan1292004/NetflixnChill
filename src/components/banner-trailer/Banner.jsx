@@ -28,7 +28,7 @@ const Banner = ({
           <p className="text-base max-w-xl mb-6">
             {description}
           </p>
-          <Button className="h-[55px]">Play Now</Button>
+          <Button className="h-[60px]">Play Now</Button>
         </div>
       </div>
     </div>
