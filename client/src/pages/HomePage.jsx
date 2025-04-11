@@ -9,12 +9,12 @@ import TVShow from "../module/home/TVShow";
 const HomePage = () => {
   return (
     <>
-      <Layout>
+      
         <Banner></Banner>
         <TrendingMovie></TrendingMovie>
         <NewRelease></NewRelease>
         <TVShow></TVShow>
-      </Layout>
+     
     </>
   );
 };
