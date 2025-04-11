@@ -6,6 +6,7 @@ import SignUp from "./pages/SignUp";
 import MovieDetail from "./pages/MovieDetail";
 import Layout from "./components/layout/Layout";
 import PlanFormPage from "./pages/PlanFormPage";
+import MovieDetailsPage from "./pages/MovieDetailsPage";
 
 function App() {
   return (
@@ -14,8 +15,8 @@ function App() {
       <Route path="/login" element={<Login></Login>}></Route>
       <Route path="/sign-up" element={<SignUp></SignUp>}></Route>
       <Route path="/" element={<Layout></Layout>}>
-      <Route path="/planform" element={<PlanFormPage></PlanFormPage>}></Route>
-      <Route path="/detail/:id" element={<MovieDetail></MovieDetail>}></Route>
+      <Route path="planform" element={<PlanFormPage></PlanFormPage>}></Route>
+      <Route path="detail/:id" element={<MovieDetailsPage></MovieDetailsPage>}></Route>
         <Route path="/" element={<HomePage></HomePage>}></Route>
       </Route>
      
