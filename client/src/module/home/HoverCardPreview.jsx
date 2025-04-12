@@ -6,6 +6,7 @@ const HoverCardPreview = ({
   year,
   duration,
   rating,
+  alignRight = false,
   showPreview = false,
   genres,
   onMouseEnter,
@@ -15,16 +16,17 @@ const HoverCardPreview = ({
     <div
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
-      className={`absolute top-0 left-0 -translate-y-6
-    w-[500px] bg-black rounded-lg shadow-2xl z-50
-    transition-opacity transition-transform duration-700 ease-[cubic-bezier(0.25,0.1,0.25,1)]
-    will-change-[opacity,transform]
-    ${
-      showPreview
-        ? "opacity-100 scale-100 pointer-events-auto"
-        : "opacity-0 scale-95 pointer-events-none"
-    }
-  `}
+      className={`absolute top-0 ${
+        alignRight ? "right-0" : "left-0"
+      } -translate-y-6 w-[500px] bg-black rounded-lg shadow-2xl z-50
+  transition-opacity transition-transform duration-700 ease-[cubic-bezier(0.25,0.1,0.25,1)]
+  will-change-[opacity,transform]
+  ${
+    showPreview 
+      ? "opacity-100 scale-100 pointer-events-auto"
+      : "opacity-0 scale-95 pointer-events-none"
+  }
+`}
     >
       <video
         src={videoSrc}

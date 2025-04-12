@@ -19,7 +19,7 @@ const Header = () => {
     <header
       className={`py-5 fixed z-30 top-0 left-0 w-full transition-all duration-300 ${
         isScroll
-          ? "bg-[#090B24] backdrop-blur-md shadow-md"
+          ? "bg-[#0F0F2D] backdrop-blur-md shadow-md"
           : "bg-transparent"
       }`}
     >
