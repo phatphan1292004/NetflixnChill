@@ -5,7 +5,13 @@ import Category from "../../category/Category";
 
 const Header = () => {
   const [isScroll, setIsScroll] = useState(false);
-  const menuItems = ["Home", "Features", "Pages", "Blogs"];
+  const menuItems = [{
+    name: "Home",
+    to: "/",
+  }, "Features", "Pages", {
+    name: "Duyệt phim",
+    to: "/get-movie",
+  }];
 
   useEffect(() => {
     const handleScroll = () => {
@@ -23,26 +29,36 @@ const Header = () => {
           : "bg-transparent"
       }`}
     >
-      <div className="px-20 flex justify-between items-center bg-transparent">
-        <div className="flex gap-5 items-center">
+      <div className="flex items-center justify-between px-20 bg-transparent">
+        <div className="flex items-center gap-5">
           <img
             src="https://streamvid.jwsuperthemes.com/wp-content/uploads/2023/02/logo.svg"
             alt=""
             className="mr-10"
           />
 
-          <div className="flex gap-10 items-center text-blue-500">
+          <div className="flex items-center gap-10 text-blue-500">
             {menuItems.map((item) =>
               item === "Features" ? (
                 renderFeaturesMenu()
               ) : (
                 // Các item khác
-                <span
+                typeof item === "string" ? 
+                (
+                  <span
                   key={item}
-                  className="text-white font-semibold cursor-pointer hover:text-primary transition"
+                  className="font-semibold text-white transition cursor-pointer hover:text-primary"
                 >
                   {item}
                 </span>
+                 ): (
+                  <a href={
+                    item.to
+                  } className="font-semibold text-white transition cursor-pointer hover:text-primary" key={item.name}
+                  >
+                    {item.name}
+                  </a>
+                 )
               )
             )}
           </div>
@@ -58,7 +74,7 @@ const Header = () => {
 
 const renderFeaturesMenu = () => (
   <div className="relative group" key="Features">
-    <span className="text-white font-semibold cursor-pointer hover:text-primary transition">
+    <span className="font-semibold text-white transition cursor-pointer hover:text-primary">
       Features
     </span>
     <div
@@ -100,7 +116,7 @@ const renderFeaturesMenu = () => (
         ></Category>
         {/* Cột 4: chiếm 3 cột */}
         <div className="col-span-3">
-          <h4 className="font-bold text-lg mb-2 text-primary">
+          <h4 className="mb-2 text-lg font-bold text-primary">
             MOVIES OF THE DAY
           </h4>
           <div className="flex space-x-2 overflow-x-auto">
@@ -113,7 +129,7 @@ const renderFeaturesMenu = () => (
                 <img
                   src={movie.img}
                   alt={movie.title}
-                  className="rounded mb-1"
+                  className="mb-1 rounded"
                 />
                 <p className="text-xs text-center">{movie.title}</p>
               </div>

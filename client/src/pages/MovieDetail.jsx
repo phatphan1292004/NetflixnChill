@@ -9,7 +9,7 @@ import ReviewForm from "../module/details/ReviewForm";
 
 const MovieDetail = () => {
   return (
-    <Layout>
+    <>
       <div className="relative w-full mt-[90px]">
         <BackgroundWithOverlay
           height="600px"
@@ -36,13 +36,13 @@ const MovieDetail = () => {
               ]}
             />
 
-            <div className="mb-4 mt-20">
+            <div className="mt-20 mb-4">
               <ReviewForm></ReviewForm>
             </div>
           </div>
         </div>
       </div>
-    </Layout>
+    </>
   );
 };
 
