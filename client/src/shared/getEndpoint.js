@@ -22,14 +22,22 @@ const getEndpoint = (info )=>{
       ...(year && { year }),
       ...(limit && { limit }),
     };
-    const newParams = reduceParams(params);
-    const queryString = new URLSearchParams(newParams).toString();
-    return queryString;
+    let newParams = getParams(params);
+    const {key: keyParam,
+        keyword,
+       type_list: typeListParam, ...searchParams} = newParams;
+    const UrlSearchParams = new URLSearchParams(searchParams).toString();
+    if(key === "tim-kiem"){
+      return "/tim-kiem"+"/"+keyword+"?"+UrlSearchParams;
+    }else{
+      console.log("/"+key+"/"+type_list+"?"+UrlSearchParams);
+      return "/"+key+"/"+type_list+"?"+UrlSearchParams;
+    }
     
 
     
 }
-const reduceParams = (params)=>{
+const getParams = (params)=>{
   if(params.key === "the-loai") {
     const {category,...newParams} = params;
     return newParams;
@@ -46,6 +54,7 @@ const reduceParams = (params)=>{
     const {type_list,...newParams} = params;
     return {keyword: type_list,...newParams};
   }
+ 
   return params;
 }
 

@@ -2,7 +2,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 
 const createAxiosInstance = (url) => {
-  const axiosInstance = axios.create({ url });
+  const axiosInstance = axios.create({  baseURL: url, });
 
   axiosInstance.interceptors.request.use((config) => {
     config.headers["Content-Type"] = "application/json";

@@ -10,7 +10,7 @@ const Header = () => {
     to: "/",
   }, "Features", "Pages", {
     name: "Duyệt phim",
-    to: "/get-movie",
+    to: "/get-movie/phim-bo",
   }];
 
   useEffect(() => {

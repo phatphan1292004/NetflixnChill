@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useLocation, useParams, useSearchParams } from 'react-router-dom';
+import getEndpoint from '../shared/getEndpoint';
 
+import menuData from '../shared/MenuData';
+import specialSearch from '../shared/SpecialSearch';
+import createAxiosInstance from '../axios/axiosInterceptor';
 
-
-
-
+import { BASE_URL } from '../shared/CommonURL';
 const movieData = [
     {
         id: '1',
@@ -78,91 +81,91 @@ const movieData = [
 ];
 
 const Table = () => {
+    let [searchParams, setSearchParams] = useSearchParams();
+    const { type } = useParams();
+    const [page,setPage] = useState(1);
+    const [limit,setLimit] = useState(10);
+    const [sortField,setSortField] = useState("");
+    const [key,setKey] = useState("");
+    const [typeList,setTypeList] = useState("");
+    const [sortType,setSortType] = useState("desc");
+    const [sortLang,setSortLang] = useState("");
+    const [country,setCountry] = useState("");
+    const [year,setYear] = useState("");
+    
     const [movies, setMovies] = useState(movieData);
 
-    const [thoiGian, setThoiGian] = useState('');
-    const [ngonNgu, setNgonNgu] = useState('');
-    const [theLoai, setTheLoai] = useState('');
-    const [quocGia, setQuocGia] = useState('');
-    const [nam, setNam] = useState('');
+
     const pageNumbers = [];
     for (let i = 1; i <= 5; i++) {
         pageNumbers.push(i);
     }
-    const handleFilter = () => {
-        let filteredMovies = [...movieData];
 
-        if (thoiGian) {
-            filteredMovies = filteredMovies.filter(movie =>
-                thoiGian === 'Thời gian đăng' ? true :
-                thoiGian === 'Năm sản xuất' ? true : false
-            );
+    useEffect(()=>{
+        if(specialSearch.includes(type)){
+            setKey("danh-sach");
+            setTypeList(type);
         }
-        if (ngonNgu) {
-            filteredMovies = filteredMovies.filter(movie =>
-                ngonNgu === 'Toàn bộ' ? true :
-                ngonNgu === 'Tiếng Việt' ? true :
-                ngonNgu === 'Tiếng Anh' ? true :
-                ngonNgu === 'Tiếng Trung' ? true :
-                ngonNgu === 'Phim Vietsub' ? true :
-                ngonNgu === 'Phim Thuyết Minh' ? true :
-                ngonNgu === 'Phim Lồng Tiếng' ? true : false
-            );
-        }
-        if (theLoai) {
-            filteredMovies = filteredMovies.filter(movie =>
-                theLoai === 'Toàn bộ' ? true :
-                theLoai === 'Hành động' ? true :
-                theLoai === 'Phiêu lưu' ? true :
-                theLoai === 'Hài hước' ? true :
-                theLoai === 'Tình cảm' ? true :
-                theLoai === 'Gia đình' ? true :
-                theLoai === 'Khoa học viễn tưởng' ? true :
-                theLoai === 'Kinh dị' ? true :
-                theLoai === 'Thể thao' ? true :
-                theLoai === 'Âm nhạc' ? true :
-                theLoai === 'Lịch sử' ? true :
-                theLoai === 'Tài liệu' ? true : false
-            );
-        }
-        if (quocGia) {
-          filteredMovies = filteredMovies.filter((movie) =>
-            quocGia === "Toàn bộ"
-              ? true
-              : quocGia === "Việt Nam"
-              ? movie.country === "Việt Nam"
-              : quocGia === "Trung Quốc"
-              ? movie.country === "Trung Quốc"
-              : quocGia === "Nhật Bản"
-              ? movie.country === "Nhật Bản"
-              : quocGia === "Hàn Quốc"
-              ? movie.country === "Hàn Quốc"
-              : quocGia === "Mỹ"
-              ? movie.country === "Mỹ"
-              : quocGia === "Anh"
-              ? movie.country === "Anh"
-              : quocGia === "Pháp"
-              ? movie.country === "Pháp"
-              : quocGia === "Thái Lan"
-              ? movie.country === "Thái Lan"
-              : quocGia === "Ấn Độ"
-              ? movie.country === "Ấn Độ"
-              : quocGia === "Canada"
-              ? movie.country === "Canada"
-              : quocGia === "Úc"
-              ? movie.country === "Úc"
-              : false
-          );
-        }
-        if (nam) {
-            filteredMovies = filteredMovies.filter(movie =>
-                nam === 'Toàn bộ' ? true : movie.year === nam
-            );
+        if(searchParams.get("value")){
+            
+            setKey(type);
+            setTypeList(searchParams.get("value"));
+            if(type === "nam"){
+                setYear(searchParams.get("value"));
+            }
+            if(type === "quoc-gia"){
+                setCountry(searchParams.get("value"));
+            }
+            
         }
 
-        setMovies(filteredMovies);
-    };
+       
+       
+      
 
+    }, [type,searchParams]);
+    useEffect(()=>{
+        const getMovies = async () => {
+            const phimapi = createAxiosInstance(BASE_URL);
+            const endpoint = getEndpoint({
+                key,
+                type_list: typeList,
+                page,
+                sort_field: sortField,
+                sort_type: sortType,
+                sort_lang: sortLang,
+                country,
+                year,
+                limit,
+            });
+            console.log(endpoint);
+            const data = await phimapi.get(endpoint);
+            if(data.status === "success"){
+                console.log(data.data.items);
+                setMovies(data.data.items);
+            }
+        };
+        getMovies()
+    },[key,typeList])
+    
+    
+    
+ 
+    const handleLoadMovie = ()=>{
+ 
+
+        console.log(getEndpoint({   
+            key,
+            type_list: typeList,
+            page,
+            sort_field: sortField,
+            sort_type: sortType,
+            sort_lang: sortLang,
+            country,
+            year,
+            limit,
+        }))
+    }
     return (
         <div className="min-h-screen py-8 mt-8 text-white bg-gray-900">
       
@@ -176,13 +179,13 @@ const Table = () => {
     <div className="space-y-1">
         <label className="block mb-1 text-sm font-medium text-gray-100">Thời gian</label>
         <select 
-            onChange={(e) => setThoiGian(e.target.value)}
+            onChange={(e) => setSortField(e.target.value)}
             className="w-full px-3 py-2 text-sm text-gray-100 transition-colors bg-gray-700 border border-gray-600 rounded-md cursor-pointer hover:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         >
-            <option value="">Tất cả</option>
-            <option value="Thời gian cập nhật">Theo cập nhật</option>
-            <option value="Thời gian đăng">Theo đăng tải</option>
-            <option value="Năm sản xuất">Theo năm SX</option>
+            <option value="" defaultChecked>Tất cả</option>
+            <option value="modified.time">Theo cập nhật</option>
+            <option value="_id">Theo ID của phim</option>
+            <option value="year">Theo năm SX</option>
         </select>
     </div>
 
@@ -190,16 +193,13 @@ const Table = () => {
     <div className="space-y-1">
         <label className="block mb-1 text-sm font-medium text-gray-100">Ngôn ngữ</label>
         <select 
-            onChange={(e) => setNgonNgu(e.target.value)}
+            onChange={(e) => setSortLang(e.target.value)}
             className="w-full px-3 py-2 text-sm text-gray-100 transition-colors bg-gray-700 border border-gray-600 rounded-md cursor-pointer hover:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         >
-            <option value="">Tất cả</option>
-            <option value="Tiếng Việt">Tiếng Việt</option>
-            <option value="Tiếng Anh">Tiếng Anh</option>
-            <option value="Tiếng Trung">Tiếng Trung</option>
-            <option value="Phim Vietsub">Vietsub</option>
-            <option value="Phim Thuyết Minh">Thuyết minh</option>
-            <option value="Phim Lồng Tiếng">Lồng tiếng</option>
+            <option value="" defaultChecked>Tất cả</option>
+            <option value="vietsub">Vietsub</option>
+            <option value="thuyet-minh">Thuyết minh</option>
+            <option value="long-tieng">Lồng tiếng</option>
         </select>
     </div>
 
@@ -207,15 +207,16 @@ const Table = () => {
     <div className="space-y-1">
         <label className="block mb-1 text-sm font-medium text-gray-100">Thể loại</label>
         <select 
-            onChange={(e) => setTheLoai(e.target.value)}
+            onChange={(e) => setTypeList(e.target.value)}
+            value={typeList}
             className="w-full px-3 py-2 text-sm text-gray-100 transition-colors bg-gray-700 border border-gray-600 rounded-md cursor-pointer hover:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         >
-            <option value="">Tất cả</option>
-            <option value="Hành động">Hành động</option>
-            <option value="Phiêu lưu">Phiêu lưu</option>
-            <option value="Hài hước">Hài hước</option>
-            <option value="Kinh dị">Kinh dị</option>
-            <option value="Khoa học viễn tưởng">Sci-fi</option>
+            <option value="" defaultChecked>Tất cả</option>
+            {
+                menuData["Thể Loại"].map((item, index) => (
+                    <option key={index} value={item.value} >{item.label}</option>
+                ))
+            }
         </select>
     </div>
 
@@ -223,15 +224,16 @@ const Table = () => {
     <div className="space-y-1">
         <label className="block mb-1 text-sm font-medium text-gray-100">Quốc gia</label>
         <select 
-            onChange={(e) => setQuocGia(e.target.value)}
+            onChange={(e) => setCountry(e.target.value)}
+            value={country}
             className="w-full px-3 py-2 text-sm text-gray-100 transition-colors bg-gray-700 border border-gray-600 rounded-md cursor-pointer hover:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         >
-            <option value="">Tất cả</option>
-            <option value="Việt Nam">Việt Nam</option>
-            <option value="Trung Quốc">Trung Quốc</option>
-            <option value="Nhật Bản">Nhật Bản</option>
-            <option value="Hàn Quốc">Hàn Quốc</option>
-            <option value="Mỹ">Mỹ</option>
+            <option value="" defaultChecked>Tất cả</option>
+            {
+                menuData["Quốc Gia"].map((item, index) => (
+                    <option key={index} value={item.value} >{item.label}</option>
+                ))
+            }
         </select>
     </div>
 
@@ -239,21 +241,23 @@ const Table = () => {
     <div className="space-y-1">
         <label className="block mb-1 text-sm font-medium text-gray-100">Năm</label>
         <select 
-            onChange={(e) => setNam(e.target.value)}
+            onChange={(e) => setYear(e.target.value)}
+            value={year}
             className="w-full px-3 py-2 text-sm text-gray-100 transition-colors bg-gray-700 border border-gray-600 rounded-md cursor-pointer hover:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         >
-            <option value="">Tất cả</option>
-            {[...Array(10)].map((_, i) => {
-                const year = new Date().getFullYear() - i;
-                return <option key={year} value={year}>{year}</option>
-            })}
+            <option value="" defaultChecked>Tất cả</option>
+            {
+                menuData["Năm"].map((item, index) => (
+                    <option key={index} value={item} >{item}</option>
+                ))
+            }
         </select>
     </div>
 
     {/* Nút lọc */}
     <div className="flex items-end">
         <button
-            onClick={handleFilter}
+            onClick={handleLoadMovie}
             className="w-full px-4 py-2 text-sm font-semibold text-white transition-colors bg-blue-600 rounded-md shadow-md hover:bg-blue-700 active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
         >
             Áp dụng
@@ -291,24 +295,36 @@ const Table = () => {
                             </tr>
                         </thead>
                         <tbody className="bg-gray-800 divide-y divide-gray-600">
-                            {movies.map((movie) => (
+                            {movies && movies.length > 0 && movies.map((movie) => (
                                 <tr key={movie.id}>
                                     <td className="px-6 py-4 text-sm whitespace-nowrap">
                                         <img
-                                            src={movie.poster}
-                                            alt={movie.title}
+                                            src={movie.thumb_url?.includes("https://img.phimapi.com/")
+                                ? movie.thumb_url
+                                : `https://img.phimapi.com/${movie.thumb_url}`
+                        }
+                                            alt={movie.name}
                                             className="w-20 h-auto mr-4 rounded-md" // Kích thước và kiểu dáng
                                         />
                                     </td>
                                     <td className="px-6 py-4 text-sm text-white whitespace-nowrap">
-                                        {movie.title}
-                                        <span className="block text-gray-400">{movie.title}</span>
+                                        {movie.name}
+                                        <span className="block text-gray-400">{movie.origin_name
+                                        }</span>
                                     </td>
                                     <td className="px-6 py-4 text-sm text-gray-400 whitespace-nowrap">{movie.year}</td>
-                                    <td className="px-6 py-4 text-sm text-gray-400 whitespace-nowrap">{movie.status}</td>
-                                    <td className="px-6 py-4 text-sm text-white whitespace-nowrap">{movie.format}</td>
-                                    <td className="px-6 py-4 text-sm text-gray-400 whitespace-nowrap">{movie.country}</td>
-                                    <td className="px-6 py-4 text-sm text-gray-400 whitespace-nowrap">{movie.updatedAt}</td>
+                                    <td className="px-6 py-4 text-sm text-gray-400 whitespace-nowrap">{movie.episode_current
+                                    }</td>
+                                    <td className="px-6 py-4 text-sm text-white whitespace-nowrap">{movie.type}</td>
+                                    <td className="px-6 py-4 text-sm text-gray-400 whitespace-nowrap">{Array.isArray(movie.country)
+    ? movie.country.map((item, index) => (
+        <span key={index}>
+          {item.name}
+          {index < movie.country.length - 1 ? ", " : ""}
+        </span>
+      ))
+    : movie.country || "Không rõ"}</td>
+                                    <td className="px-6 py-4 text-sm text-gray-400 whitespace-nowrap">{movie.modified?.time}</td>
                                 </tr>
                             ))}
                         </tbody>
