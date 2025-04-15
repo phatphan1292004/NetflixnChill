@@ -1,14 +1,11 @@
 import Button from "../../components/button/Button";
 
 const HoverCardPreview = ({
-  videoSrc,
-  title,
-  year,
-  duration,
-  rating,
+  
+  height,
   alignRight = false,
   showPreview = false,
-  genres,
+  movie,
   onMouseEnter,
   onMouseLeave,
 }) => {
@@ -28,22 +25,33 @@ const HoverCardPreview = ({
   }
 `}
     >
-      <video
-        src={videoSrc}
+      {/* <video
+        src={""}
         autoPlay
         muted
         loop
         className="w-full h-[200px] object-cover rounded-t-lg"
-      />
+      /> */}
+      <img
+         src={movie.poster_url?.includes("https://img.phimapi.com/")
+                                ? movie.poster_url
+                                : `https://img.phimapi.com/${movie.poster_url}`
+                        }
+                                            alt={movie.name}
+          
+          className={`rounded-lg mb-4 object-cover w-full max-h-[400px] ${
+            height || "h-auto"
+          }`}
+        />
       <div className="p-4 text-white">
-        <h3 className="text-lg font-semibold">{title}</h3>
-        <p className="text-sm text-gray-400 mt-2">
-          {year} · {duration} · {rating}
+        <h3 className="text-lg font-semibold">{movie.name}</h3>
+        <p className="mt-2 text-sm text-gray-400">
+          {movie.year} · {movie.time} · {movie.type}
         </p>
-        <div className="flex gap-2 text-sm mt-3">
-          {genres.map((g, i) => (
-            <span key={i} className="bg-white/10 px-2 py-1 rounded">
-              {g}
+        <div className="flex gap-2 mt-3 text-sm">
+          {movie.category.map((g, i) => (
+            <span key={i} className="px-2 py-1 rounded bg-white/10">
+              {g.name}
             </span>
           ))}
         </div>

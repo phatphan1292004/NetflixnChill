@@ -1,12 +1,12 @@
 import { useState, useRef } from "react";
 import HoverCardPreview from "./HoverCardPreview";
 
-const MovieCardPopular = ({ title, image, year, duration, rating, height }) => {
+const MovieCardPopular = ({  duration, rating, height, movie }) => {
   const [showPreview, setShowPreview] = useState(false);
   const [alignRight, setAlignRight] = useState(false);
   const cardRef = useRef(null);
   const timeoutRef = useRef(null);
-
+  console.log(movie);
   const handleMouseEnter = () => {
     clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => {
@@ -35,17 +35,21 @@ const MovieCardPopular = ({ title, image, year, duration, rating, height }) => {
       onMouseLeave={handleMouseLeave}
     >
       {/* Movie Card */}
-      <div className="p-3 rounded-lg transition text-white cursor-pointer">
+      <div className="p-3 text-white transition rounded-lg cursor-pointer">
         <img
-          src={image}
-          alt={title}
+         src={movie.thumb_url?.includes("https://img.phimapi.com/")
+                                ? movie.thumb_url
+                                : `https://img.phimapi.com/${movie.thumb_url}`
+                        }
+                                            alt={movie.name}
+          
           className={`rounded-lg mb-4 object-cover w-full ${
             height || "h-auto"
           }`}
         />
-        <h3 className="text-lg font-medium truncate">{title}</h3>
-        <div className="flex items-center gap-4 text-sm text-gray-400 mt-1">
-          <span>{year}</span>
+        <h3 className="text-lg font-medium truncate">{movie.name}</h3>
+        <div className="flex items-center gap-4 mt-1 text-sm text-gray-400">
+          <span>{movie.year}</span>
           <span>{duration}</span>
           <span>{rating}</span>
         </div>
@@ -55,12 +59,9 @@ const MovieCardPopular = ({ title, image, year, duration, rating, height }) => {
       <HoverCardPreview
         alignRight={alignRight}
         showPreview={showPreview}
-        videoSrc="/banner.mp4"
-        title={title}
-        year={year}
+        movie={movie}
         duration={duration}
         rating={rating}
-        genres={["Action", "Crime", "Thriller"]}
       />
     </div>
   );
