@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, useParams, useSearchParams } from 'react-router-dom';
+import { data, useLocation, useParams, useSearchParams } from 'react-router-dom';
 import getEndpoint from '../shared/getEndpoint';
 
 import menuData from '../shared/MenuData';
 import specialSearch from '../shared/SpecialSearch';
 import createAxiosInstance from '../axios/axiosInterceptor';
-
+import { Pagination } from 'antd';
 import { BASE_URL } from '../shared/CommonURL';
 const movieData = [
     {
@@ -80,11 +80,21 @@ const movieData = [
     },
 ];
 
+const itemRender= (_, type, originalElement) => {
+    if (type === 'prev') {
+      return <a className='text-slate-300'>Previous</a>;
+    }
+    if (type === 'next') {
+      return <a className='text-slate-300'>Next</a>;
+    }
+    return originalElement;
+  };
 const Table = () => {
     let [searchParams, setSearchParams] = useSearchParams();
+    
     const { type } = useParams();
     const [page,setPage] = useState(1);
-    const [limit,setLimit] = useState(10);
+    const [limit,setLimit] = useState(8);
     const [sortField,setSortField] = useState("");
     const [key,setKey] = useState("");
     const [typeList,setTypeList] = useState("");
@@ -92,6 +102,9 @@ const Table = () => {
     const [sortLang,setSortLang] = useState("");
     const [country,setCountry] = useState("");
     const [year,setYear] = useState("");
+    const [totalPage,setTotalPage] = useState(0);
+    const [totalItem,setTotalItem] = useState(0);
+
     
     const [movies, setMovies] = useState(movieData);
 
@@ -141,30 +154,41 @@ const Table = () => {
             console.log(endpoint);
             const data = await phimapi.get(endpoint);
             if(data.status === "success"){
-                console.log(data.data.items);
+                setTotalItem(data.data.params.pagination.totalItems);
+                setTotalPage(data.data.params.pagination.totalPages);
                 setMovies(data.data.items);
             }
         };
         getMovies()
-    },[key,typeList])
+    },[key,typeList,page,limit])
     
     
     
  
     const handleLoadMovie = ()=>{
- 
-
-        console.log(getEndpoint({   
-            key,
-            type_list: typeList,
-            page,
-            sort_field: sortField,
-            sort_type: sortType,
-            sort_lang: sortLang,
-            country,
-            year,
-            limit,
-        }))
+        const getMovies = async () => {
+            const phimapi = createAxiosInstance(BASE_URL);
+            const endpoint = getEndpoint({
+                key,
+                type_list: typeList,
+                page,
+                sort_field: sortField,
+                sort_type: sortType,
+                sort_lang: sortLang,
+                country,
+                year,
+                limit,
+            });
+            console.log(endpoint);
+            const data = await phimapi.get(endpoint);
+            if(data.status === "success"){
+                console.log(data);
+                setTotalItem(data.data.params.pagination.totalItems);
+                setTotalPage(data.data.params.pagination.totalPages);
+                setMovies(data.data.items);
+            }
+        };
+        getMovies()
     }
     return (
         <div className="min-h-screen py-8 mt-8 text-white bg-gray-900">
@@ -207,6 +231,7 @@ const Table = () => {
     <div className="space-y-1">
         <label className="block mb-1 text-sm font-medium text-gray-100">Thể loại</label>
         <select 
+            disabled={type === "the-loai"}
             onChange={(e) => setTypeList(e.target.value)}
             value={typeList}
             className="w-full px-3 py-2 text-sm text-gray-100 transition-colors bg-gray-700 border border-gray-600 rounded-md cursor-pointer hover:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -224,6 +249,7 @@ const Table = () => {
     <div className="space-y-1">
         <label className="block mb-1 text-sm font-medium text-gray-100">Quốc gia</label>
         <select 
+            disabled={type === "quoc-gia"}
             onChange={(e) => setCountry(e.target.value)}
             value={country}
             className="w-full px-3 py-2 text-sm text-gray-100 transition-colors bg-gray-700 border border-gray-600 rounded-md cursor-pointer hover:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -241,6 +267,7 @@ const Table = () => {
     <div className="space-y-1">
         <label className="block mb-1 text-sm font-medium text-gray-100">Năm</label>
         <select 
+            disabled={type === "nam"}
             onChange={(e) => setYear(e.target.value)}
             value={year}
             className="w-full px-3 py-2 text-sm text-gray-100 transition-colors bg-gray-700 border border-gray-600 rounded-md cursor-pointer hover:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -313,8 +340,10 @@ const Table = () => {
                                         }</span>
                                     </td>
                                     <td className="px-6 py-4 text-sm text-gray-400 whitespace-nowrap">{movie.year}</td>
-                                    <td className="px-6 py-4 text-sm text-gray-400 whitespace-nowrap">{movie.episode_current
-                                    }</td>
+                                    <td className="px-6 py-4 text-sm whitespace-nowrap">
+                                        <p className='inline-block p-1 px-2 text-center text-green-400 rounded-full bg-slate-900'>{movie.episode_current
+                                        }</p>
+                                    </td>
                                     <td className="px-6 py-4 text-sm text-white whitespace-nowrap">{movie.type}</td>
                                     <td className="px-6 py-4 text-sm text-gray-400 whitespace-nowrap">{Array.isArray(movie.country)
     ? movie.country.map((item, index) => (
@@ -331,32 +360,24 @@ const Table = () => {
                     </table>
                 </div>
                 {/* Phần phân trang */}
-                <div className="flex items-center justify-center mt-6 space-x-2">
-                <button
-                   
-                   
-                    className={`px-4 py-2 text-sm font-medium rounded-md transition-colors `}
-                >
-                    ← Previous
-                </button>
                 
-                {pageNumbers.map(number => (
-                    <button
-                        key={number}
-                        className={`px-4 py-2 min-w-[40px] text-sm font-medium rounded-md transition-colors `}
-                    >
-                        {number}
-                    </button>
-                ))}
-                
-                <button
-                   
-                  
-                    className={`px-4 py-2 text-sm font-medium rounded-md transition-colors `}
-                >
-                    Next →
-                </button>
-            </div>
+            <Pagination
+                className="flex items-center justify-center gap-2 mx-auto mt-8 select-none text-slate-300"
+                current={page}
+                pageSize={limit} // Controlled, không dùng defaultPageSize nữa
+                onChange={(newPage, newPageSize) => {
+                if (newPageSize !== limit) {
+                setLimit(newPageSize);
+                setPage(1); // reset về trang 1 nếu đổi size
+                } else {
+                setPage(newPage);
+                }
+                }}
+                showSizeChanger
+                total={totalItem}
+                itemRender={itemRender}
+                pageSizeOptions={[8, 16, 32, 64]}
+                />
 
 
                 {/* Thông tin bản quyền */}

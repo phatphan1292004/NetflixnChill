@@ -1,0 +1,25 @@
+.ant-pagination-item-ellipsis{
+  color: rgb(200, 218, 236)!important;
+}
+.ant-pagination-item{
+  border: none!important;
+  background-color: transparent!important;
+}
+.ant-pagination-item a{
+  color: rgb(200, 218, 236)!important;
+  background-color: #04083e!important;
+
+}
+/* .ant-select-selection-item, .ant-select-selection-search{
+  color: rgb(200, 218, 236)!important;
+  background-color: #04083e!important;
+} */
+.ant-select-selector{
+  background-color: #04083e!important;
+  border: none!important;
+  color: rgb(200, 218, 236)!important;
+}
+.ant-pagination-item-active a{
+  background-color: rgb(200, 218, 236)!important;
+  color: #04083e!important; 
+}
